@@ -12,7 +12,8 @@ setup(
     py_modules=['gee-extraction'],
     install_requires=[
         'Click',
-        'pyshp'
+        'pyshp',
+        'pycrs'
     ],
     entry_points='''
         [console_scripts]
