@@ -27,6 +27,7 @@ def write_prj(fn, datum=WGS84):
         writer.write(crs.to_esri_wkt())
     return prj
 
+
 def extract_color(text):
     """ Extract color from parsed text """
     pattern = '\#[\d\w]+'
@@ -48,7 +49,12 @@ def convert_multipoint_coords(text):
 
 
 def extract_color_multipoints(text):
-    """ Extract points from text """
+    """ Extract points from text
+
+    Return a list of dicts
+
+    [{'name': string, 'color': sting, 'coords': list of points}, ]
+    """
     color_pattern = "(\/\*\s*color:\s*#\w+\s*\*\/)"
     with_color = "(\s+)(\w+)(\s*=\s*){}ee.Geometry.MultiPoint\(([\s\S]+?)\)".format(color_pattern)
 
@@ -64,3 +70,27 @@ def extract_color_multipoints(text):
         result.append(midres)
 
     return result
+
+
+def extract_multipoints(text):
+    """ Extract points from text
+
+    Return a list of dicts
+
+    [{'name': string, 'color': sting, 'coords': list of points}, ]
+    """
+    without_color = "(\s+)(\w+)(\s*=\s*)ee.Geometry.MultiPoint\(([\s\S]+?)\)"
+
+    match = re.findall(without_color, text)
+
+    result = []
+    for m in match:
+        midres = dict()
+        midres['name'] = m[1]
+        midres['color'] = None
+        coords = m[3].replace('\n', '').replace(' ', '')
+        midres['coords'] = convert_multipoint_coords(coords)
+        result.append(midres)
+
+    return result
+

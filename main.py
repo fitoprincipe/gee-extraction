@@ -24,11 +24,12 @@ def points2shape(fn, result_fn):
     fpath = os.path.join(os.getcwd(), fn)
     with open(fpath, 'r') as thefile:
         content = thefile.read()
-        multipoints = helpers.extract_color_multipoints(content)
+        cmultipoints = helpers.extract_color_multipoints(content)
+        multipoints = helpers.extract_multipoints(content)
         with pyshp.Writer(result_fn, 8) as writeshp:
             writeshp.field('Name', 'C', size=50)
             writeshp.field('Color', 'C', size=10)
-            for data in multipoints:
+            for data in multipoints+cmultipoints:
                 # print(data)
                 writeshp.record(data['name'], data['color'])
                 writeshp.multipoint(data['coords'])
